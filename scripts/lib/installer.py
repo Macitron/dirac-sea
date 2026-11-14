@@ -173,8 +173,6 @@ def build_installer(
             assets = download_assets(tmp, excluded_packages)
         installer_mode = "--online-only" if online_only else "--hybrid" 
         output_name = "ImpactoInstallerWeb" if online_only else "ImpactoInstaller"
-        if(platform.system() == "Darwin"):
-            output_name += ".dmg"
         repo_dir = common.ROOT / "updates"
 
         if repo_dir.exists():
@@ -220,6 +218,12 @@ def build_installer(
         if not online_only:
             run_args += ["-e", install_excluded_packages]
 
-        run_args.append(dist / output_name)
-
-        run(run_args)
+        if platform.system() == "Darwin":
+            # binarycreator modifies installerbase without re-signing, so macOS kills it on launch.
+            # Its --sign flag can't take the ad-hoc identity "-", so sign the .app and build the DMG here.
+            app = tmp / "dmg" / f"{output_name}.app"
+            run(run_args + [app])
+            run(["codesign", "--force", "--sign", "-", app])
+            run(["hdiutil", "create", "-ov", "-volname", output_name, "-srcfolder", app.parent, dist / f"{output_name}.dmg"])
+        else:
+            run(run_args + [dist / output_name])

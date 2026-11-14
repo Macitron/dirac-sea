@@ -91,3 +91,6 @@ installer/packages/com.committeeofzero.cclcc.*/data/*.zip
 dist
 
 updates
+
+# I won't apologize for using macOS
+.DS_Store
