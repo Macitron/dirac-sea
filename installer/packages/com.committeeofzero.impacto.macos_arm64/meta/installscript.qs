@@ -137,11 +137,9 @@ function prepConfigFilesMac() {
     const productName = installer.value("Name");
     const publisher = installer.value("Publisher");
 
-    // ~/Library/Preferences/Committee of Zero/Impacto
-    const configDir = `${QDesktopServices.storageLocation(QDesktopServices.ConfigLocation)}/${publisher}/${productName}`;
-
     // ~/Library/Application Support/Committee of Zero/Impacto
     const dataDir = `${QDesktopServices.storageLocation(QDesktopServices.GenericDataLocation)}/${publisher}/${productName}`;
+    const configDir = dataDir;
 
     const isConfigDirSameAsTargetDir = installer.value("TargetDir") === configDir;
     if (!isConfigDirSameAsTargetDir) component.addOperation("Mkdir", configDir);
